@@ -1,0 +1,13 @@
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ANIME MAFIA</title><style>body{font-family:sans-serif;background:#111;color:#eee;margin:0;padding:10px}button{padding:10px;margin:4px;border:0;border-radius:8px;background:#6c3df4;color:#fff}
+#chat div{padding:6px;margin:4px 0;background:#222;border-radius:8px}.e{color:#fc6}.x{color:#f66}.r{color:#6cf}#st{font-size:12px;color:#aaa}</style></head><body>
+<h2>ANIME MAFIA</h2><div id="st"></div>
+<button onclick="go('challenge')">وضع التحدي</button><button onclick="fetch('/api/stop',{method:'POST'})">إيقاف</button>
+<div id="chat"></div><script>
+async function go(mode){const r=await fetch('/api/start',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({mode})});const j=await r.json();if(j.error)alert(j.error);}
+const c=document.getElementById('chat');
+new EventSource('/api/events').onmessage=e=>{const m=JSON.parse(e.data),d=document.createElement('div');
+d.className={event:'e',error:'x',reveal:'r',end:'r'}[m.kind]||'';d.textContent=(m.who?m.who+': ':'')+m.text+(m.roles?'\n'+m.roles.join(' | '):'');c.append(d);scrollTo(0,document.body.scrollHeight);};
+setInterval(async()=>{const s=await (await fetch('/api/state')).json(),g=s.gemini;
+document.getElementById('st').textContent=`Gemini: ${g.keySet?'مفتاح مضبوط':'بدون مفتاح'} | ${g.model||'-'} | طلبات ${g.requests} | ردود ${g.replies} | أخطاء ${g.errors} | انتظار ${g.queued}`+(g.lastError?' | '+g.lastError:'');},3000);
+</script></body></html>
